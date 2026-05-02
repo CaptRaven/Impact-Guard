@@ -1,0 +1,36 @@
+# Core dependencies (install first)
+setuptools>=65.0.0
+wheel>=0.38.0
+
+# Web framework
+fastapi==0.109.0
+uvicorn==0.27.0
+python-multipart==0.0.6
+
+# Data validation
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# IBM Watson SDK (using newer versions that build correctly)
+ibm-cloud-sdk-core>=3.20.0
+ibm-watson>=8.1.0
+
+# Git operations
+gitpython==3.1.41
+
+# Configuration
+python-dotenv==1.0.0
+
+# Analysis and ML
+numpy==1.26.3
+scikit-learn==1.4.0
+sentence-transformers==2.3.1
+
+# Voice (fallback)
+pyttsx3==2.90
+
+# Mistral AI LLM
+mistralai>=0.1.0
+
+# File operations
+aiofiles==23.2.1

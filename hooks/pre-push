@@ -1,0 +1,181 @@
+#!/bin/bash
+
+# ImpactGuard Pre-Push Hook
+# Analyzes code changes before pushing to git
+# Installation: cp hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+
+echo ""
+echo "🛡️  ImpactGuard: Analyzing changes before push..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Configuration
+IMPACTGUARD_URL="${IMPACTGUARD_URL:-http://localhost:8000}"
+IMPACTGUARD_ENABLED="${IMPACTGUARD_ENABLED:-true}"
+
+# Check if ImpactGuard is enabled
+if [ "$IMPACTGUARD_ENABLED" != "true" ]; then
+    echo "⚠️  ImpactGuard is disabled (set IMPACTGUARD_ENABLED=true to enable)"
+    exit 0
+fi
+
+# Check if server is running
+if ! curl -s "$IMPACTGUARD_URL/health" > /dev/null 2>&1; then
+    echo "⚠️  ImpactGuard server not running at $IMPACTGUARD_URL"
+    echo "   Start it with: python main.py"
+    echo ""
+    read -p "Continue without analysis? (y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Push cancelled"
+        exit 1
+    fi
+    exit 0
+fi
+
+# Get the current branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Get remote branch (if exists)
+REMOTE_BRANCH="origin/$CURRENT_BRANCH"
+if ! git rev-parse --verify "$REMOTE_BRANCH" > /dev/null 2>&1; then
+    # First push - compare with HEAD
+    CHANGED_FILES=$(git diff --name-only HEAD)
+else
+    # Compare with remote
+    CHANGED_FILES=$(git diff --name-only "$REMOTE_BRANCH"..HEAD)
+fi
+
+# Check if there are changes
+if [ -z "$CHANGED_FILES" ]; then
+    echo "✅ No changes to analyze"
+    exit 0
+fi
+
+# Count files
+FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l | tr -d ' ')
+echo "📁 Analyzing $FILE_COUNT changed file(s)..."
+echo ""
+
+# Convert file list to JSON array
+FILES_JSON=$(echo "$CHANGED_FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+
+# Get repository path
+REPO_PATH=$(git rev-parse --show-toplevel)
+
+# Call BOB - The AI Code Analyzer
+echo "🤖 Bob is analyzing your changes..."
+RESPONSE=$(curl -s -X POST "$IMPACTGUARD_URL/bob/analyze" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"repository_path\": \"$REPO_PATH\",
+    \"changed_files\": $FILES_JSON
+  }" 2>/dev/null)
+
+# Check if request was successful and response is valid JSON
+if [ $? -ne 0 ] || [ -z "$RESPONSE" ] || ! echo "$RESPONSE" | jq . > /dev/null 2>&1; then
+    echo "❌ Failed to get valid analysis from ImpactGuard"
+    echo "   Ensure the server is running and 'jq' is installed."
+    echo ""
+    read -p "Continue without analysis? (y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "❌ Push cancelled"
+        exit 1
+    fi
+    exit 0
+fi
+
+# Parse Bob's response
+RISK_LEVEL=$(echo "$RESPONSE" | jq -r '.risk_level // "UNKNOWN"')
+RISK_SCORE=$(echo "$RESPONSE" | jq -r '.risk_score // 0')
+BOB_ENABLED=$(echo "$RESPONSE" | jq -r '.bob_enabled // false')
+
+# Get Bob's 5 sections
+IMPACT=$(echo "$RESPONSE" | jq -r '.analysis.impact_prediction // "Not available"')
+BREAKAGE=$(echo "$RESPONSE" | jq -r '.analysis.breakage_simulation // "Not available"')
+REVIEWER=$(echo "$RESPONSE" | jq -r '.analysis.smart_reviewer // "Not available"')
+LEARNING=$(echo "$RESPONSE" | jq -r '.analysis.learning_path // "Not available"')
+VOICE=$(echo "$RESPONSE" | jq -r '.analysis.voice_explanation // "Not available"')
+
+# Display Bob's analysis
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Color-coded risk level
+case "$RISK_LEVEL" in
+    "HIGH")
+        echo "🔴 RISK LEVEL: HIGH (Score: $RISK_SCORE)"
+        ;;
+    "MEDIUM")
+        echo "🟡 RISK LEVEL: MEDIUM (Score: $RISK_SCORE)"
+        ;;
+    "LOW")
+        echo "🟢 RISK LEVEL: LOW (Score: $RISK_SCORE)"
+        ;;
+    *)
+        echo "⚪ RISK LEVEL: UNKNOWN"
+        ;;
+esac
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+if [ "$BOB_ENABLED" = "true" ]; then
+    echo "🤖 BOB'S ANALYSIS (AI-Powered)"
+else
+    echo "📊 BOB'S ANALYSIS (Basic Mode)"
+    echo "💡 Add MISTRAL_API_KEY to .env for AI-powered insights"
+fi
+
+echo ""
+echo "🔥 1. IMPACT PREDICTION"
+echo "$IMPACT" | fold -s -w 70
+echo ""
+
+echo "🔥 2. BREAKAGE SIMULATION"
+echo "$BREAKAGE" | fold -s -w 70
+echo ""
+
+echo "🔥 3. SMART REVIEWER ASSIGNMENT"
+echo "$REVIEWER" | fold -s -w 70
+echo ""
+
+echo "🔥 4. AUTO LEARNING PATH"
+echo "$LEARNING" | fold -s -w 70
+echo ""
+
+echo "🔥 5. VOICE EXPLANATION"
+echo "$VOICE" | fold -s -w 70
+echo ""
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Ask for confirmation
+echo ""
+if [ "$RISK_LEVEL" = "HIGH" ]; then
+    echo "⚠️  HIGH RISK detected! Are you sure you want to push?"
+elif [ "$RISK_LEVEL" = "MEDIUM" ]; then
+    echo "⚠️  MEDIUM RISK detected. Please review carefully."
+fi
+
+read -p "Continue with push? (y/n) " -n 1 -r
+echo
+echo ""
+
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "❌ Push cancelled by user"
+    echo ""
+    echo "💡 Tip: Review the AI suggestions above and make necessary changes"
+    echo "   Then commit and try pushing again"
+    exit 1
+fi
+
+echo "✅ Proceeding with push..."
+echo ""
+exit 0
+
+# Made with Bob
