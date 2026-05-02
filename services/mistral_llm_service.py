@@ -1,4 +1,4 @@
-"""
+ts"""
 Mistral AI LLM Service for ImpactGuard
 Provides deep code reasoning, contextual understanding, and AI pair programming capabilities
 """
@@ -83,8 +83,7 @@ class MistralLLMService:
     async def generate_conversational_summary(
         self,
         impact_report: Dict[str, Any],
-        user_context: Optional[str] = None,
-        code_context: Optional[Dict[str, str]] = None
+        user_context: Optional[str] = None
     ) -> str:
         """
         Generate a truly conversational, human-like summary
@@ -92,7 +91,6 @@ class MistralLLMService:
         Args:
             impact_report: The impact analysis report
             user_context: Optional context about what the user is trying to do
-            code_context: Optional actual code snippets
         
         Returns:
             Conversational summary that feels like talking to a senior developer
@@ -109,14 +107,11 @@ Impact Analysis Data:
 
 {f"Developer's Context: {user_context}" if user_context else ""}
 
-{f"Actual Code Snippets:\n{json.dumps(code_context, indent=2)}" if code_context else ""}
-
 Provide a conversational summary that:
 1. Starts with a friendly observation about what they're changing
 2. Highlights the most important risks in plain English
-3. Reference actual code logic if code snippets were provided
-4. Suggests specific things to check or update
-5. Ends with an encouraging note or helpful tip
+3. Suggests specific things to check or update
+4. Ends with an encouraging note or helpful tip
 
 Keep it under 150 words. Sound like a helpful colleague, not a robot.
 """
