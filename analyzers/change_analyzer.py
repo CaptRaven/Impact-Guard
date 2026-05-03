@@ -220,7 +220,7 @@ class ChangeAnalyzer:
     
     def get_diff_stats(self, branch: str = "main") -> List[FileChange]:
         """
-        Get diff statistics for uncommitted changes
+        Get diff statistics for uncommitted changes (staged, unstaged, and untracked)
         
         Args:
             branch: Branch to compare against
@@ -231,28 +231,54 @@ class ChangeAnalyzer:
         if not self.repo:
             return []
         
-        changes = []
+        changes_dict = {}
         
         try:
-            # Get diff for staged and unstaged changes
-            diff_index = self.repo.index.diff(None)  # Unstaged
-            diff_staged = self.repo.index.diff('HEAD')  # Staged
-            
-            all_diffs = list(diff_index) + list(diff_staged)
-            
-            for diff_item in all_diffs:
-                file_change = FileChange(
-                    path=diff_item.a_path or diff_item.b_path,
-                    additions=0,  # GitPython doesn't provide line counts easily
+            # 1. Get unstaged changes
+            diff_index = self.repo.index.diff(None)
+            for diff_item in diff_index:
+                path = diff_item.a_path or diff_item.b_path
+                changes_dict[path] = FileChange(
+                    path=path,
+                    additions=0,
                     deletions=0,
                     is_new=diff_item.new_file,
                     is_deleted=diff_item.deleted_file
                 )
-                changes.append(file_change)
-        
-        except Exception:
+            
+            # 2. Get staged changes
+            try:
+                diff_staged = self.repo.index.diff('HEAD')
+                for diff_item in diff_staged:
+                    path = diff_item.a_path or diff_item.b_path
+                    if path not in changes_dict:
+                        changes_dict[path] = FileChange(
+                            path=path,
+                            additions=0,
+                            deletions=0,
+                            is_new=diff_item.new_file,
+                            is_deleted=diff_item.deleted_file
+                        )
+            except Exception:
+                # HEAD might not exist in a new repo
+                pass
+                
+            # 3. Get untracked files
+            untracked = self.repo.untracked_files
+            for path in untracked:
+                if path not in changes_dict:
+                    changes_dict[path] = FileChange(
+                        path=path,
+                        additions=0,
+                        deletions=0,
+                        is_new=True,
+                        is_deleted=False
+                    )
+                    
+        except Exception as e:
+            print(f"Error getting git diff stats: {e}")
             pass
         
-        return changes
+        return list(changes_dict.values())
 
 # Made with Bob

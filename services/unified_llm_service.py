@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Any
 from pathlib import Path
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
+from config import settings
 
 
 class UnifiedLLMService:
@@ -18,9 +19,9 @@ class UnifiedLLMService:
     
     def __init__(self, api_key: Optional[str] = None):
         """Initialize Mistral AI client"""
-        self.api_key = api_key or os.getenv("MISTRAL_API_KEY")
+        self.api_key = api_key or settings.MISTRAL_API_KEY
         self.client = None
-        self.model = "mistral-large-latest"
+        self.model = settings.MISTRAL_MODEL or "mistral-large-latest"
         
         if self.api_key:
             try:

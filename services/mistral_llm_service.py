@@ -1,4 +1,4 @@
-ts"""
+"""
 Mistral AI LLM Service for ImpactGuard
 Provides deep code reasoning, contextual understanding, and AI pair programming capabilities
 """
@@ -7,6 +7,7 @@ import json
 from typing import Dict, List, Optional, Any
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
+from config import settings
 
 
 class MistralLLMService:
@@ -22,9 +23,9 @@ class MistralLLMService:
     
     def __init__(self, api_key: Optional[str] = None):
         """Initialize Mistral AI client"""
-        self.api_key = api_key or os.getenv("MISTRAL_API_KEY")
+        self.api_key = api_key or settings.MISTRAL_API_KEY
         self.client = None
-        self.model = "mistral-large-latest"  # Best model for code reasoning
+        self.model = settings.MISTRAL_MODEL or "mistral-large-latest"
         
         if self.api_key:
             try:
@@ -83,7 +84,8 @@ class MistralLLMService:
     async def generate_conversational_summary(
         self,
         impact_report: Dict[str, Any],
-        user_context: Optional[str] = None
+        user_context: Optional[str] = None,
+        code_context: Optional[Dict[str, str]] = None
     ) -> str:
         """
         Generate a truly conversational, human-like summary
@@ -91,6 +93,7 @@ class MistralLLMService:
         Args:
             impact_report: The impact analysis report
             user_context: Optional context about what the user is trying to do
+            code_context: Optional actual code snippets
         
         Returns:
             Conversational summary that feels like talking to a senior developer
@@ -99,19 +102,30 @@ class MistralLLMService:
             return self._fallback_conversational_summary(impact_report)
         
         try:
+            code_snippets_text = ""
+            if code_context:
+                code_snippets_text = f"Actual Code Snippets:\n{json.dumps(code_context, indent=2)}"
+            
+            context_text = ""
+            if user_context:
+                context_text = f"Developer's Context: {user_context}"
+            
             prompt = f"""
 You're a senior software engineer reviewing a colleague's code changes. Be conversational, helpful, and specific.
 
 Impact Analysis Data:
 {json.dumps(impact_report, indent=2)}
 
-{f"Developer's Context: {user_context}" if user_context else ""}
+{context_text}
+
+{code_snippets_text}
 
 Provide a conversational summary that:
 1. Starts with a friendly observation about what they're changing
 2. Highlights the most important risks in plain English
-3. Suggests specific things to check or update
-4. Ends with an encouraging note or helpful tip
+3. Reference actual code logic if code snippets were provided
+4. Suggests specific things to check or update
+5. Ends with an encouraging note or helpful tip
 
 Keep it under 150 words. Sound like a helpful colleague, not a robot.
 """

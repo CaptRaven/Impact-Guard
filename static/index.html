@@ -285,6 +285,51 @@
             text-decoration: line-through;
         }
 
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 15px;
+            background-color: var(--chat-ai-bg);
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .typing-indicator .dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-indicator .dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.7;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
         .btn-vscode {
             background-color: var(--accent-color);
             color: white;
@@ -451,6 +496,7 @@
     <!-- Status Bar -->
     <div class="status-bar">
         <span><i data-lucide="git-branch" style="width:12px; vertical-align: middle; margin-right: 4px;"></i> main*</span>
+        <span id="status-change-count">0 <i data-lucide="file-code" style="width:12px; vertical-align: middle;"></i> changes</span>
         <span>0 <i data-lucide="alert-triangle" style="width:12px; vertical-align: middle;"></i> 0 <i data-lucide="x-circle" style="width:12px; vertical-align: middle;"></i></span>
         <span style="margin-left: auto;">UTF-8</span>
         <span>Python 3.12</span>
@@ -491,6 +537,7 @@
             const repoPath = document.getElementById('chatRepoPath').value;
             const listEl = document.getElementById('live-files-list');
             const countEl = document.getElementById('changed-count');
+            const statusCountEl = document.getElementById('status-change-count');
             
             try {
                 const response = await fetch(`/git/status?repository_path=${encodeURIComponent(repoPath)}`);
@@ -498,9 +545,11 @@
                 
                 if (data.changed_files && data.changed_files.length > 0) {
                     countEl.textContent = `${data.count} files`;
+                    statusCountEl.innerHTML = `${data.count} <i data-lucide="file-code" style="width:12px; vertical-align: middle;"></i> changes`;
                     listEl.innerHTML = data.changed_files.map(f => `<div title="${f}"><i data-lucide="file-code" style="width:10px; margin-right:5px;"></i>${f.split('/').pop()}</div>`).join('');
                 } else {
                     countEl.textContent = `0 files`;
+                    statusCountEl.innerHTML = `0 <i data-lucide="file-code" style="width:12px; vertical-align: middle;"></i> changes`;
                     listEl.innerHTML = '<div style="opacity:0.5; font-style:italic;">No changes detected</div>';
                 }
                 lucide.createIcons();
@@ -655,6 +704,32 @@
             }
         }
 
+        function showTypingIndicator() {
+            const chatMessages = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <i data-lucide="bot" style="width:16px; color:var(--accent-color);"></i>
+                <span>Bob is analyzing</span>
+                <div class="dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            lucide.createIcons();
+        }
+
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
         function addMessage(text, type, data = null) {
             const chatMessages = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
@@ -769,6 +844,9 @@
             input.value = '';
             addMessage(text, 'user');
             
+            // Show typing indicator
+            showTypingIndicator();
+            
             try {
                 const response = await fetch('/conversation/query', {
                     method: 'POST',
@@ -792,12 +870,16 @@
                     }
                 }
 
+                // Hide typing indicator before showing response
+                hideTypingIndicator();
+                
                 addMessage(data.response_text || 'Analysis complete.', 'ai', {
                     analysis: data.analysis,
                     audioUrl: audioUrl,
                     live_files: data.live_files
                 });
             } catch (error) {
+                hideTypingIndicator();
                 addMessage('Error: ' + error.message, 'ai');
             }
         }
@@ -848,6 +930,10 @@
 
         async function processChatVoice(blob, repoPath, extension) {
             addMessage('<i>Processing voice...</i>', 'user');
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
             try {
                 const formData = new FormData();
                 formData.append('audio', blob, `query.${extension}`);
@@ -873,12 +959,18 @@
                     }
                 }
 
+                // Hide typing indicator before showing response
+                hideTypingIndicator();
+
                 addMessage(data.response_text || 'Analysis complete.', 'ai', {
                     analysis: data.analysis,
                     audioUrl: audioUrl,
                     live_files: data.live_files
                 });
-            } catch (error) { addMessage('Error: ' + error.message, 'ai'); }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('Error: ' + error.message, 'ai');
+            }
         }
 
         async function checkHealth() {

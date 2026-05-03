@@ -938,14 +938,21 @@ async def bob_analyze(
 
 
 @app.get("/git/status")
-async def get_git_status(repository_path: str):
+async def get_git_status(repository_path: Optional[str] = None):
     """Get currently changed files in the repository"""
     try:
-        service = ImpactService(repository_path)
+        repo_path = repository_path or os.getcwd()
+        
+        if not os.path.exists(repo_path):
+            return {"error": "Path does not exist", "changed_files": [], "count": 0}
+            
+        service = ImpactService(repo_path)
         diff_stats = service.change_analyzer.get_diff_stats("main")
+        
         return {
             "changed_files": [f.path for f in diff_stats],
-            "count": len(diff_stats)
+            "count": len(diff_stats),
+            "repo_path": repo_path
         }
     except Exception as e:
         return {"error": str(e), "changed_files": [], "count": 0}

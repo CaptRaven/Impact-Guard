@@ -1,315 +1,517 @@
 # ImpactGuard 🛡️
 
-An AI-powered code impact analysis system that predicts potential risks before you commit. Now with **Mistral AI LLM** for deep code reasoning and AI pair programming!
+**AI-Powered Code Impact Analysis** - Analyze code changes BEFORE you commit and prevent production issues.
 
-## 🚀 Latest: Mistral AI LLM Integration
+> **Live Git Monitoring** • **Mistral AI Brain** • **VS Code Integration** • **Real-time Analysis**
 
-ImpactGuard has evolved from a code scanner into an **AI Pair Programming Assistant**!
+---
 
-### 🤖 What's New with Mistral AI:
-- 🧠 **Deep "Why" Analysis**: Understand the root cause of risks, not just what they are
-- 💬 **Conversational Summaries**: Human-like explanations instead of JSON dumps
-- 🔮 **"What If" Scenarios**: Ask hypothetical questions and get detailed predictions
-- 🔧 **Actionable Code Fixes**: Get specific line-by-line remediation suggestions
-- 💡 **AI Chat Assistant**: Ask questions about your code in natural language
+## 🎯 What is ImpactGuard?
 
-[See Mistral AI Guide →](MISTRAL_AI_GUIDE.md)
+ImpactGuard is an intelligent code analysis system that watches your repository in real-time and provides AI-powered insights before you push code. Think of it as having a senior developer reviewing every change instantly.
 
-### 🎯 IBM WatsonX Integration
+### ⚡ Key Features
 
-Full conversational AI capabilities with voice interaction:
+- 🔴 **Live Git Monitoring** - Detects staged, unstaged, and untracked files in real-time
+- 🤖 **Bob - AI Analyzer** - Mistral AI-powered analysis with 5 clear insights
+- 🎨 **VS Code UI** - Professional interface with Lucide icons
+- 🔌 **Git Hook Integration** - Automatic analysis before every push
+- 📊 **Real-time Status** - Live file counter in status bar
+- 🗣️ **Voice AI** - IBM WatsonX for conversational interaction
 
-- 🗣️ **Natural Language Queries**: "Analyze my auth changes" or "What's the risk?"
-- 🎤 **Voice Input**: Speak your queries instead of typing
-- 🔊 **Voice Output**: Get spoken responses with high-quality AI voices
-- 💬 **Multi-turn Conversations**: Context-aware dialogue
+---
 
-[See WatsonX Integration Guide →](WATSONX_INTEGRATION.md)
+## 🤖 Meet Bob - Your AI Code Analyzer
 
-## Features
+Bob analyzes your changes and gives you **exactly 5 things**:
 
-### 1. Change Impact Analyzer
-- Analyzes git diff or modified files
-- Identifies dependencies across the repository
-- Determines which modules, services, or flows are affected
-- Outputs structured impact reports
+### 1. 🔥 Impact Prediction
+"This change affects authentication → session management → 3 downstream services → HIGH risk"
 
-### 2. Risk Scoring Engine
-- Assigns risk scores (Low, Medium, High)
-- Considers multiple factors:
-  - Critical files (auth, payments, core services)
-  - Number of dependent modules affected
-  - Frequency of past changes
-  - Historical issues or bugs
+### 2. 🔥 Breakage Simulation
+"Similar change in commit #a82f caused login failures lasting 3 hours"
 
-### 3. Historical Insight Extraction
-- Analyzes git history and PRs
-- Detects patterns:
-  - Files frequently causing bugs
-  - High-change areas ("hot zones")
-  - Co-change patterns
-- Provides warnings about similar past issues
+### 3. 🔥 Smart Reviewer Assignment
+"Send this to Sarah Chen (87% ownership of authentication module)"
 
-### 4. Smart Reviewer Suggestion
-- Uses git blame and commit history
-- Identifies top contributors for affected files
-- Recommends reviewers with confidence scores
+### 4. 🔥 Auto Learning Path
+"Before editing, understand: 1. auth.py 2. session_handler.py 3. middleware.py"
+*(Only shown for HIGH risk changes)*
 
-### 5. Guided Learning Path
-- For high-risk changes, suggests 3-5 files to understand
-- Provides brief explanations for each file
-- Prioritizes critical dependencies
+### 5. 🔥 Voice Explanation
+"You're reducing timeout from 30 to 10 seconds. Risky because migrations take 15-25 seconds..."
 
-### 6. Voice Output (Optional)
-- Converts impact reports to spoken explanations
-- Concise summaries under 30 seconds
-- Clear, confident, technical tone
+[See Bob in Action →](MISTRAL_AI_GUIDE.md)
 
-## Installation
+---
 
-1. Clone the repository:
+## 🚀 Quick Start (3 Steps)
+
+### 1. Install Dependencies
 ```bash
+# Clone repository
 git clone <repository-url>
 cd "Impact Guard"
-```
 
-2. Install dependencies:
-```bash
+# Setup conda environment
+conda create -n impactguard python=3.10
+conda activate impactguard
+
+# Install packages
 pip install -r requirements.txt
 ```
 
-3. Create a `.env` file (optional):
+### 2. Configure API Keys (Optional but Recommended)
 ```bash
+# Copy example config
 cp .env.example .env
+
+# Add your Mistral AI key for Bob
+echo "MISTRAL_API_KEY=your_key_here" >> .env
 ```
 
-## Usage
+Get your free Mistral AI key: https://console.mistral.ai/
 
-### Starting the API Server
-
+### 3. Start & Use
 ```bash
+# Start the server
 python main.py
+
+# In another terminal, install git hook
+./install_hook.sh
+
+# Make changes and push - Bob analyzes automatically!
+git push
 ```
 
-The API will be available at `http://localhost:8000`
+---
 
-### API Documentation
+## 🎨 User Interface
 
-Once the server is running, visit:
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
+### Demo UI
+Open http://localhost:8000 for a beautiful VS Code-inspired interface:
 
-### API Endpoints
+- **Live Git Monitoring** - See changed files in real-time
+- **Interactive Analysis** - Click to analyze any file
+- **Status Bar Counter** - Shows live file count
+- **Lucide Icons** - Professional, scalable icons
+- **4 Tabs**: Analyze Files, Quick Summary, AI Features, System Health
 
-#### 1. Analyze Changes
+### Git Hook Integration
+Every time you `git push`, Bob automatically analyzes:
+
 ```bash
-POST /analyze
+$ git push
+
+🛡️  ImpactGuard: Analyzing changes before push...
+📁 Analyzing 2 changed file(s)...
+🤖 Bob is analyzing your changes...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔴 RISK LEVEL: HIGH (Score: 0.87)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🤖 BOB'S ANALYSIS (AI-Powered)
+
+🔥 1. IMPACT PREDICTION
+This change affects authentication → 3 services → HIGH risk
+
+🔥 2. BREAKAGE SIMULATION
+Similar change in commit #a82f caused login failures
+
+🔥 3. SMART REVIEWER ASSIGNMENT
+Send this to Sarah (87% ownership of auth module)
+
+🔥 4. AUTO LEARNING PATH
+Before editing: 1. auth.py 2. session_handler.py
+
+🔥 5. VOICE EXPLANATION
+Timeout reduction risky - migrations need 15-25 seconds...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️  HIGH RISK detected! Are you sure you want to push?
+Continue with push? (y/n)
 ```
 
-Request body:
+---
+
+## 📡 API Endpoints
+
+### Core Analysis
+
+#### Bob Analyzer (Main Endpoint)
+```bash
+POST /bob/analyze
+```
+Returns Bob's 5-section analysis
+
+**Request:**
 ```json
 {
   "repository_path": "/path/to/repo",
-  "changed_files": [
-    {
-      "path": "src/auth.ts",
-      "additions": 50,
-      "deletions": 10
-    }
-  ],
-  "branch": "main"
+  "changed_files": ["auth.py", "session.py"]
 }
 ```
 
-#### 2. Analyze Specific Files
-```bash
-POST /analyze/files
-```
-
-Request body:
+**Response:**
 ```json
 {
-  "repository_path": "/path/to/repo",
-  "file_paths": ["src/auth.ts", "src/payment.ts"]
-}
-```
-
-#### 3. Analyze Uncommitted Changes
-```bash
-POST /analyze/diff
-```
-
-Request body:
-```json
-{
-  "repository_path": "/path/to/repo",
-  "branch": "main"
-}
-```
-
-#### 4. Get Quick Summary
-```bash
-POST /summary
-```
-
-Request body:
-```json
-{
-  "repository_path": "/path/to/repo",
-  "file_paths": ["src/auth.ts"]
-}
-```
-
-#### 5. Get Voice Summary
-```bash
-POST /voice
-```
-
-Request body:
-```json
-{
-  "repository_path": "/path/to/repo",
-  "file_paths": ["src/auth.ts"]
-}
-```
-
-### Example Response
-
-```json
-{
-  "risk_level": "HIGH",
-  "risk_score": 0.87,
-  "affected_areas": ["authentication", "payment_service"],
-  "critical_files": ["auth.ts", "paymentProcessor.ts"],
-  "warnings": [
-    {
-      "message": "Similar change caused login failure in commit a82f",
-      "severity": "high",
-      "related_files": ["auth.ts"]
-    },
-    {
-      "message": "High dependency impact across 3 services",
-      "severity": "high"
-    }
-  ],
-  "suggested_reviewers": [
-    {
-      "name": "Sarah",
-      "email": "sarah@example.com",
-      "confidence": 0.87,
-      "commits_count": 45,
-      "expertise_areas": ["authentication", "api"]
-    },
-    {
-      "name": "Mike",
-      "email": "mike@example.com",
-      "confidence": 0.65,
-      "commits_count": 23,
-      "expertise_areas": ["payments"]
-    }
-  ],
-  "learning_path": [
-    {
-      "file": "auth.ts",
-      "reason": "Core authentication logic",
-      "importance": "high",
-      "lines_of_code": 250
-    },
-    {
-      "file": "middleware.ts",
-      "reason": "Handles request validation",
-      "importance": "medium",
-      "lines_of_code": 150
-    }
-  ],
-  "metadata": {
-    "total_changes": 60,
-    "files_count": 2
+  "success": true,
+  "bob_enabled": true,
+  "analysis": {
+    "impact_prediction": "This change affects auth → 3 services → HIGH risk",
+    "breakage_simulation": "Similar change in #a82f caused failures",
+    "smart_reviewer": "Send to Sarah (87% ownership)",
+    "learning_path": "Understand: 1. auth.py 2. session.py",
+    "voice_explanation": "Timeout too short for migrations..."
   },
-  "voice_summary": "High risk detected with score 0.87. Affected areas: authentication, payment service. 2 critical files affected. Warning: Similar change caused login failure in commit a82f. Recommended reviewer: Sarah. Thorough review and testing required before proceeding."
+  "risk_level": "HIGH",
+  "risk_score": 0.87
 }
 ```
 
-## Python Usage
-
-You can also use ImpactGuard directly in Python:
-
-```python
-from services import ImpactService
-from models import ChangeInput, FileChange
-
-# Initialize service
-service = ImpactService("/path/to/repo")
-
-# Analyze specific files
-report = service.analyze_specific_files([
-    "src/auth.ts",
-    "src/payment.ts"
-])
-
-# Print summary
-print(service.get_quick_summary(report))
-
-# Get voice summary
-voice_summary = service.voice_service.generate_voice_summary(report)
-print(voice_summary)
+#### Standard Analysis
+```bash
+POST /analyze/files      # Analyze specific files
+POST /analyze/diff       # Analyze git diff
+POST /summary            # Quick text summary
+POST /voice              # Voice summary
 ```
 
-## Configuration
+### Mistral AI LLM Endpoints
+```bash
+POST /llm/explain-risk          # Deep "why" explanation
+POST /llm/conversational-summary # Human-like summary
+POST /llm/what-if               # Hypothetical scenarios
+POST /llm/suggest-fixes         # Code remediation
+POST /llm/chat                  # General AI chat
+```
 
-Edit `config.py` to customize:
+### WatsonX Voice AI
+```bash
+POST /conversational/query      # Natural language query
+POST /conversational/speak      # Text-to-speech
+POST /conversational/transcribe # Speech-to-text
+POST /conversational/voice-query # Full voice interaction
+```
 
-- Risk thresholds
-- Critical file patterns
-- Analysis depth
-- Reviewer suggestion limits
-- Voice output settings
+### System
+```bash
+GET  /                  # Demo UI
+GET  /api              # API information
+GET  /health           # System health
+GET  /docs             # Swagger documentation
+```
 
-## Architecture
+---
+
+## 🏗️ Architecture
+
+### Core Components
 
 ```
 ImpactGuard/
-├── analyzers/              # Core analysis modules
-│   ├── change_analyzer.py  # Change impact analysis
-│   ├── risk_scorer.py      # Risk scoring engine
-│   ├── history_analyzer.py # Historical insights
-│   ├── reviewer_suggester.py # Reviewer suggestions
-│   └── learning_path_generator.py # Learning paths
-├── services/               # Service layer
-│   ├── impact_service.py   # Main orchestrator
-│   └── voice_service.py    # Voice output
-├── models.py               # Data models
-├── config.py               # Configuration
-├── main.py                 # FastAPI application
-└── requirements.txt        # Dependencies
+├── analyzers/                    # Analysis engines
+│   ├── change_analyzer.py        # Live git monitoring (268 lines)
+│   ├── risk_scorer.py            # Multi-factor risk scoring (226 lines)
+│   ├── history_analyzer.py       # Pattern detection (343 lines)
+│   ├── reviewer_suggester.py     # Expert identification (235 lines)
+│   └── learning_path_generator.py # Guided learning (262 lines)
+│
+├── services/                     # AI services
+│   ├── bob_analyzer.py           # Main AI brain (232 lines) ⭐
+│   ├── mistral_llm_service.py    # Deep reasoning (485 lines)
+│   ├── unified_llm_service.py    # Comprehensive analysis (298 lines)
+│   ├── watsonx_nlu_service.py    # Natural language (310 lines)
+│   ├── watsonx_tts_service.py    # Text-to-speech (226 lines)
+│   ├── watsonx_stt_service.py    # Speech-to-text (276 lines)
+│   ├── conversational_service.py # Voice orchestration (253 lines)
+│   ├── impact_service.py         # Main orchestrator (180 lines)
+│   └── voice_service.py          # Fallback TTS (125 lines)
+│
+├── static/
+│   └── index.html                # VS Code-style UI
+│
+├── hooks/
+│   └── pre-push                  # Git hook script
+│
+├── main.py                       # FastAPI server (900+ lines)
+├── models.py                     # Data models (96 lines)
+├── config.py                     # Configuration (79 lines)
+└── requirements.txt              # Dependencies
 ```
 
-## Requirements
+### How It Works
 
-- Python 3.8+
-- Git repository with commit history
-- Dependencies listed in requirements.txt
+```
+Developer makes changes
+        ↓
+Git detects changes (live monitoring)
+        ↓
+Status bar updates (real-time counter)
+        ↓
+Developer attempts push
+        ↓
+Pre-push hook triggers
+        ↓
+Calls /bob/analyze endpoint
+        ↓
+Backend analyzes:
+  • Reads actual code
+  • Checks git history
+  • Calculates dependencies
+  • Identifies reviewers
+        ↓
+Sends to Mistral AI LLM
+        ↓
+LLM provides deep reasoning
+        ↓
+Returns 5 clear sections
+        ↓
+Hook displays beautifully
+        ↓
+Developer decides: Push or Fix
+```
 
-## Limitations
+---
 
-- Requires a valid git repository
-- Analysis accuracy depends on commit history quality
-- Voice output requires system TTS support
-- Best suited for repositories with consistent commit practices
+## 🔧 Configuration
 
-## Future Enhancements
+### Environment Variables (.env)
 
-- Machine learning for better risk prediction
-- Integration with CI/CD pipelines
-- Support for multiple VCS systems
-- Real-time analysis during development
-- Team collaboration features
-- Custom rule definitions
+```bash
+# Mistral AI (Recommended for Bob)
+MISTRAL_API_KEY=your_mistral_key
+MISTRAL_MODEL=mistral-large-latest
+MISTRAL_TEMPERATURE=0.4
 
-## License
+# IBM WatsonX (Optional - for voice features)
+WATSONX_NLU_API_KEY=your_nlu_key
+WATSONX_NLU_URL=https://api.us-south.natural-language-understanding.watson.cloud.ibm.com
+
+WATSONX_TTS_API_KEY=your_tts_key
+WATSONX_TTS_URL=https://api.us-south.text-to-speech.watson.cloud.ibm.com
+
+WATSONX_STT_API_KEY=your_stt_key
+WATSONX_STT_URL=https://api.us-south.speech-to-text.watson.cloud.ibm.com
+```
+
+### Git Hook Configuration
+
+```bash
+# Customize hook behavior
+export IMPACTGUARD_URL=http://localhost:8000
+export IMPACTGUARD_ENABLED=true
+```
+
+---
+
+## 📚 Documentation
+
+### Guides
+- [**QUICKSTART.md**](QUICKSTART.md) - 5-minute setup guide
+- [**MISTRAL_AI_GUIDE.md**](MISTRAL_AI_GUIDE.md) - Bob & LLM features
+- [**WATSONX_INTEGRATION.md**](WATSONX_INTEGRATION.md) - Voice AI setup
+- [**VSCODE_EXTENSION_GUIDE.md**](VSCODE_EXTENSION_GUIDE.md) - Git integration
+- [**DEMO_UI_GUIDE.md**](DEMO_UI_GUIDE.md) - UI usage guide
+
+### Setup & Troubleshooting
+- [**SETUP_INSTRUCTIONS.md**](SETUP_INSTRUCTIONS.md) - Complete setup
+- [**IBM_CREDENTIALS_GUIDE.md**](IBM_CREDENTIALS_GUIDE.md) - Get API keys
+- [**INSTALLATION_FIX.md**](INSTALLATION_FIX.md) - Common issues
+- [**ERROR_CHECK_AND_FIX.md**](ERROR_CHECK_AND_FIX.md) - Error diagnostics
+
+---
+
+## ✨ What Makes ImpactGuard Special
+
+### vs Traditional Tools
+
+| Feature | Traditional Tools | ImpactGuard |
+|---------|------------------|-------------|
+| **Analysis** | Static, on-demand | Live, real-time |
+| **Output** | JSON dumps | 5 clear sections |
+| **Insights** | "High risk" | "Why risky + how to fix" |
+| **Context** | None | Historical patterns |
+| **Reviewers** | Manual | AI-assigned experts |
+| **Learning** | None | Guided file paths |
+| **Integration** | Manual | Automatic git hooks |
+| **UI** | Command line | VS Code-style |
+
+### Key Differentiators
+
+1. **Live Git Monitoring** - Sees changes as you type
+2. **Bob's 5 Sections** - Clear, actionable insights
+3. **Mistral AI Brain** - Deep reasoning, not just pattern matching
+4. **Real-time Status** - Always know what's being analyzed
+5. **Professional UI** - Lucide icons, VS Code aesthetic
+6. **Git Hook Integration** - Automatic pre-push analysis
+7. **Voice Interaction** - Ask questions, get spoken answers
+
+---
+
+## 🎯 Use Cases
+
+### 1. Pre-Commit Safety
+Analyze changes before pushing to catch issues early
+
+### 2. Code Review Assistant
+Get AI insights for pull requests
+
+### 3. Developer Learning
+Understand code dependencies and patterns
+
+### 4. Team Standards
+Enforce review practices automatically
+
+### 5. Risk Assessment
+Predict production impact before deployment
+
+### 6. Onboarding Tool
+Help new developers understand the codebase
+
+---
+
+## 🚀 Advanced Features
+
+### Live Git Detection
+- **Staged files**: `git diff --cached`
+- **Unstaged files**: `git diff`
+- **Untracked files**: `git ls-files --others`
+- **Smart deduplication**: No double-counting
+- **Automatic path detection**: Works in any directory
+
+### AI-Powered Analysis
+- **Mistral AI LLM**: Deep code reasoning
+- **Context awareness**: Reads actual code
+- **Historical learning**: Learns from past failures
+- **Cascade prediction**: Predicts ripple effects
+- **Specific recommendations**: Line-by-line fixes
+
+### Voice Interaction
+- **Natural language queries**: Ask in plain English
+- **Text-to-speech**: Hear the analysis
+- **Speech-to-text**: Speak your questions
+- **Full conversations**: Multi-turn dialogue
+
+---
+
+## 📊 System Requirements
+
+- **Python**: 3.10+
+- **Git**: Any recent version
+- **OS**: macOS, Linux, Windows
+- **Memory**: 2GB+ recommended
+- **API Keys**: Mistral AI (optional but recommended)
+
+---
+
+## 🎓 Getting Help
+
+### Quick Links
+- **Demo UI**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+
+### Common Issues
+
+**"Bob not configured"**
+```bash
+# Add Mistral API key
+echo "MISTRAL_API_KEY=your_key" >> .env
+# Restart server
+python main.py
+```
+
+**"Git hook not working"**
+```bash
+# Reinstall hook
+./install_hook.sh
+# Make it executable
+chmod +x .git/hooks/pre-push
+```
+
+**"Server not starting"**
+```bash
+# Check if port 8000 is available
+lsof -i :8000
+# Kill existing process if needed
+kill -9 <PID>
+```
+
+---
+
+## 🌟 What's Working
+
+### Core Features ✅
+- ✅ Real-time git monitoring (staged, unstaged, untracked)
+- ✅ Dependency analysis
+- ✅ Risk scoring (LOW/MEDIUM/HIGH)
+- ✅ Historical pattern detection
+- ✅ Smart reviewer suggestions
+- ✅ Learning path generation
+
+### AI Features ✅
+- ✅ Bob's 5-section analysis
+- ✅ Mistral AI LLM integration
+- ✅ Deep "why" explanations
+- ✅ Conversational summaries
+- ✅ "What if" scenarios
+- ✅ Code remediation suggestions
+
+### Voice Features ✅
+- ✅ IBM WatsonX NLU (natural language)
+- ✅ IBM WatsonX TTS (text-to-speech)
+- ✅ IBM WatsonX STT (speech-to-text)
+- ✅ Full voice-to-voice interaction
+- ✅ Fallback voice synthesis
+
+### Git Integration ✅
+- ✅ Pre-push hook
+- ✅ Automatic change detection
+- ✅ Live status updates
+- ✅ Interactive confirmation
+- ✅ Beautiful CLI output
+
+### UI/UX ✅
+- ✅ VS Code-inspired design
+- ✅ Lucide Icons (professional)
+- ✅ Live file counter
+- ✅ Real-time updates
+- ✅ Interactive analysis display
+
+---
+
+## 🎉 Summary
+
+**ImpactGuard is a complete, production-ready AI-powered code analysis system** that:
+
+1. **Monitors** code changes in real-time
+2. **Analyzes** dependencies and risks
+3. **Predicts** production impacts
+4. **Suggests** expert reviewers
+5. **Explains** why changes are risky
+6. **Recommends** specific fixes
+7. **Integrates** seamlessly with git
+8. **Provides** professional VS Code-style UI
+
+**All core features work. AI features enhance the experience but are optional.**
+
+---
+
+## 📝 License
 
 MIT License
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions welcome! Please submit a Pull Request.
+
+---
+
+**Built with ❤️ by developers, for developers**
+
+*Transform your git workflow with AI-powered pre-push analysis!* 🛡️✨
